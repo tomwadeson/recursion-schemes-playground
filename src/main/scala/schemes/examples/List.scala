@@ -70,9 +70,6 @@ object ListExample extends App {
 
   import Recursive.syntax._
 
-  val x: Recursive[List[Int]] = Recursive[List[Int]]
-  val y: Recursive.Aux[List[Int], ListF[Int, ?]] = Recursive[List[Int]]
-
   println(list.cata(sum))
   println(list.cata(product))
   println(list.cata(size))
