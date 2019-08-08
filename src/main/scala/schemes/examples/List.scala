@@ -1,4 +1,5 @@
 package schemes
+
 package examples
 
 import cats.Functor
@@ -19,7 +20,7 @@ object ListF {
   def nil[A]: List[A] =
     Fix[ListF[A, ?]](ListF.Nil)
 
-  implicit def functor[X]: Functor[ListF[X, ?]] = new Functor[ListF[X, ?]] {
+  implicit def functorB[X]: Functor[ListF[X, ?]] = new Functor[ListF[X, ?]] {
     override def map[A, B](fa: ListF[X, A])(f: A => B): ListF[X, B] =
       fa match {
         case Cons(head, tail) => Cons(head, f(tail))
@@ -66,4 +67,21 @@ object ListExample extends App {
   // 120
   // 5
   // Fix(Cons(10,Fix(Cons(20,Fix(Cons(30,Fix(Cons(40,Fix(Cons(50,Fix(Nil)))))))))))
+
+  import Recursive.syntax._
+
+  val x: Recursive[List[Int]] = Recursive[List[Int]]
+  val y: Recursive.Aux[List[Int], ListF[Int, ?]] = Recursive[List[Int]]
+
+  println(list.cata(sum))
+  println(list.cata(product))
+  println(list.cata(size))
+  println(list.cata(map(_ * 10)))
+
+  // Output:
+  // 15
+  // 120
+  // 5
+  // Fix(Cons(10,Fix(Cons(20,Fix(Cons(30,Fix(Cons(40,Fix(Cons(50,Fix(Nil)))))))))))
+
 }
