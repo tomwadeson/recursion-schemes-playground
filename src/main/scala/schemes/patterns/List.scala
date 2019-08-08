@@ -47,6 +47,12 @@ object ListF {
     def map[A, B](f: A => B): Algebra[ListF[A, ?], MyList[B]] =
       algebra(nil[B])((x, acc) => cons(f(x), acc))
   }
+
+  object coalgebras {
+
+    val range: Coalgebra[ListF[Int, ?], Int] =
+      n => if (n > 0) ListF.Cons(n, n - 1) else ListF.Nil
+  }
 }
 
 object ListExample extends App {
@@ -56,19 +62,6 @@ object ListExample extends App {
 
   val list: MyList[Int] =
     cons(1, cons(2, cons(3, cons(4, cons(5, nil)))))
-
-  println(cata(list)(sum))
-  println(cata(list)(product))
-  println(cata(list)(size))
-  println(cata(list)(map(_ * 10)))
-
-  // Output:
-  // 15
-  // 120
-  // 5
-  // Fix(Cons(10,Fix(Cons(20,Fix(Cons(30,Fix(Cons(40,Fix(Cons(50,Fix(Nil)))))))))))
-
-  import Recursive.syntax._
 
   println(list.cata(sum))
   println(list.cata(product))
@@ -94,4 +87,10 @@ object ListExample extends App {
   // 5
   // Fix(Cons(10,Fix(Cons(20,Fix(Cons(30,Fix(Cons(40,Fix(Cons(50,Fix(Nil)))))))))))
 
+  println(5.ana[MyList[Int]](coalgebras.range))
+  println(5.ana[List[Int]](coalgebras.range))
+
+  // Output:
+  // Fix(Cons(5,Fix(Cons(4,Fix(Cons(3,Fix(Cons(2,Fix(Cons(1,Fix(Nil)))))))))))
+  // List(5, 4, 3, 2, 1)
 }

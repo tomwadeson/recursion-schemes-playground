@@ -31,16 +31,4 @@ object Recursive {
       case head :: tail => ListF.Cons(head, tail)
       case Nil          => ListF.Nil
     }
-
-  object syntax {
-
-    implicit class RecursiveOps[T, F[_]](target: T)(implicit ev: Aux[T, F]) {
-
-      def project: F[T] =
-        ev.project(target)
-
-      def cata[A](alg: Algebra[F, A]): A =
-        ev.cata[A](target)(alg)
-    }
-  }
 }
