@@ -6,7 +6,7 @@ ThisBuild / libraryDependencies ++= CompilerPlugins.all
 
 lazy val root = (project in file("."))
   .settings(
-    name := "scala-barebones",
+    name := "recursion-schemes",
     libraryDependencies ++= Seq(
       catsCore,
       scalaTest % Test
