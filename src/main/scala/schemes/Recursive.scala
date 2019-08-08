@@ -2,6 +2,7 @@ package schemes
 
 import cats.Functor
 import cats.syntax.functor._
+import schemes.patterns.ListF
 
 trait Recursive[T] {
 
@@ -23,6 +24,12 @@ object Recursive {
       type Base[A] = F[A]
       implicit val baseFunctor: Functor[F] = F
       def project(t: T): F[T] = proj(t)
+    }
+
+  implicit def scalaList[A]: Aux[List[A], ListF[A, ?]] =
+    instance[List[A], ListF[A, ?]] {
+      case head :: tail => ListF.Cons(head, tail)
+      case Nil          => ListF.Nil
     }
 
   object syntax {

@@ -1,6 +1,6 @@
 package schemes
 
-package examples
+package patterns
 
 import cats.Functor
 
@@ -8,16 +8,16 @@ sealed trait ListF[+A, +B] extends Product with Serializable
 
 object ListF {
 
-  type List[A] = Fix[ListF[A, ?]]
+  type MyList[A] = Fix[ListF[A, ?]]
 
   final case class Cons[A, B](head: A, tail: B) extends ListF[A, B]
 
   final case object Nil extends ListF[Nothing, Nothing]
 
-  def cons[A](a: A, list: List[A]): List[A] =
+  def cons[A](a: A, list: MyList[A]): MyList[A] =
     Fix[ListF[A, ?]](ListF.Cons(a, list))
 
-  def nil[A]: List[A] =
+  def nil[A]: MyList[A] =
     Fix[ListF[A, ?]](ListF.Nil)
 
   implicit def functorB[X]: Functor[ListF[X, ?]] = new Functor[ListF[X, ?]] {
@@ -44,7 +44,7 @@ object ListF {
     def size[A]: Algebra[ListF[A, ?], Int] =
       algebra(0)((_, acc) => 1 + acc)
 
-    def map[A, B](f: A => B): Algebra[ListF[A, ?], List[B]] =
+    def map[A, B](f: A => B): Algebra[ListF[A, ?], MyList[B]] =
       algebra(nil[B])((x, acc) => cons(f(x), acc))
   }
 }
@@ -54,7 +54,7 @@ object ListExample extends App {
   import ListF._
   import ListF.algebras._
 
-  val list: List[Int] =
+  val list: MyList[Int] =
     cons(1, cons(2, cons(3, cons(4, cons(5, nil)))))
 
   println(cata(list)(sum))
@@ -74,6 +74,19 @@ object ListExample extends App {
   println(list.cata(product))
   println(list.cata(size))
   println(list.cata(map(_ * 10)))
+
+  // Output:
+  // 15
+  // 120
+  // 5
+  // Fix(Cons(10,Fix(Cons(20,Fix(Cons(30,Fix(Cons(40,Fix(Cons(50,Fix(Nil)))))))))))
+
+  val scalaList = List(1, 2, 3, 4, 5)
+
+  println(scalaList.cata(sum))
+  println(scalaList.cata(product))
+  println(scalaList.cata(size))
+  println(scalaList.cata(map(_ * 10)))
 
   // Output:
   // 15
