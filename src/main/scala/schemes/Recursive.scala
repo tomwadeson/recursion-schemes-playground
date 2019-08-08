@@ -5,11 +5,12 @@ import cats.Functor
 trait Recursive[T] {
 
   type Base[A]
+  implicit val BF: Functor[Base]
 
-  def project(t: T)(implicit F: Functor[Base]): Base[T]
+  def project(t: T): Base[T]
 
-  final def cata[A](t: T)(alg: Algebra[Base, A])(implicit F: Functor[Base]): A =
-    alg(F.map(project(t))(cata(_)(alg)))
+  final def cata[A](t: T)(alg: Algebra[Base, A]): A =
+    alg(BF.map(project(t))(cata(_)(alg)))
 }
 
 object Recursive {
@@ -22,10 +23,10 @@ object Recursive {
 
     implicit class RecursiveOps[T, F[_]](target: T)(implicit ev: Aux[T, F]) {
 
-      def project(implicit F: Functor[F]): F[T] =
+      def project: F[T] =
         ev.project(target)
 
-      def cata[A](alg: Algebra[F, A])(implicit F: Functor[F]): A =
+      def cata[A](alg: Algebra[F, A]): A =
         ev.cata[A](target)(alg)
     }
   }
