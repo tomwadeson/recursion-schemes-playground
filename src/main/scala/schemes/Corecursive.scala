@@ -1,14 +1,13 @@
 package schemes
 
 import cats.Functor
-import cats.syntax.functor._
 
 trait Corecursive[T] extends Base {
 
   def embed(bt: Base[T]): T
 
-  final def ana[A](a: A)(coalg: Coalgebra[Base, A]): T =
-    embed(coalg(a).map(ana(_)(coalg)))
+  def ana[A](a: A)(coalg: Coalgebra[Base, A]): T =
+    hylo(embed, coalg)(a)
 }
 
 object Corecursive {

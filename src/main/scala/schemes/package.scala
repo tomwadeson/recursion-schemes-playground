@@ -1,8 +1,14 @@
+import cats.Functor
+import cats.syntax.functor._
+
 package object schemes {
 
   type Algebra[F[_], A] = F[A] => A
 
   type Coalgebra[F[_], A] = A => F[A]
+
+  def hylo[F[_]: Functor, A, B](alg: Algebra[F, B], coalg: Coalgebra[F, A])(a: A): B =
+    alg(coalg(a).map(hylo(alg, coalg)(_)))
 
   implicit def birecursiveIsRecursive[T, F[_]](
       implicit ev: Birecursive.Aux[T, F]
