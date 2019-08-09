@@ -93,4 +93,9 @@ object ListExample extends App {
   // Output:
   // Fix(Cons(5,Fix(Cons(4,Fix(Cons(3,Fix(Cons(2,Fix(Cons(1,Fix(Nil)))))))))))
   // List(5, 4, 3, 2, 1)
+
+  def factorial(n: Int): Int =
+    hylo(algebras.product[Int], coalgebras.range)(n)
+
+  println(factorial(5)) // 120
 }
