@@ -4,6 +4,14 @@ package object schemes {
 
   type Coalgebra[F[_], A] = A => F[A]
 
+  implicit def birecursiveIsRecursive[T, F[_]](
+      implicit ev: Birecursive.Aux[T, F]
+  ): Recursive.Aux[T, F] = ev
+
+  implicit def birecursiveIsCorecursive[T, F[_]](
+      implicit ev: Birecursive.Aux[T, F]
+  ): schemes.Corecursive.Aux[T, F] = ev
+
   implicit class IdOps[A](target: A) {
 
     object ana {

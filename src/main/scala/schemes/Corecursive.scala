@@ -2,7 +2,6 @@ package schemes
 
 import cats.Functor
 import cats.syntax.functor._
-import schemes.patterns.ListF
 
 trait Corecursive[T] {
 
@@ -24,11 +23,5 @@ object Corecursive {
       type Base[A] = F[A]
       implicit val baseFunctor: Functor[F] = F
       override def embed(bt: F[T]): T = em(bt)
-    }
-
-  implicit def scalaList[A]: Aux[List[A], ListF[A, ?]] =
-    instance[List[A], ListF[A, ?]] {
-      case ListF.Cons(head, tail) => head :: tail
-      case ListF.Nil              => List.empty
     }
 }

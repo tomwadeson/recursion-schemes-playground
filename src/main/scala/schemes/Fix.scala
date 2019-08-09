@@ -6,9 +6,6 @@ final case class Fix[F[_]](unfix: F[Fix[F]])
 
 object Fix {
 
-  implicit def recursive[F[_]: Functor]: Recursive.Aux[Fix[F], F] =
-    Recursive.instance[Fix[F], F](_.unfix)
-
-  implicit def corecursive[F[_]: Functor]: Corecursive.Aux[Fix[F], F] =
-    Corecursive.instance[Fix[F], F](Fix(_))
+  implicit def birecursive[F[_]: Functor]: Birecursive.Aux[Fix[F], F] =
+    Birecursive.instance[Fix[F], F](_.unfix, Fix(_))
 }
