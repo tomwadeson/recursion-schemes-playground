@@ -3,10 +3,7 @@ package schemes
 import cats.Functor
 import cats.syntax.functor._
 
-trait Corecursive[T] {
-
-  type Base[A]
-  implicit val baseFunctor: Functor[Base]
+trait Corecursive[T] extends Base {
 
   def embed(bt: Base[T]): T
 

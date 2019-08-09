@@ -3,10 +3,7 @@ package schemes
 import cats.Functor
 import cats.syntax.functor._
 
-trait Recursive[T] {
-
-  type Base[A]
-  implicit val baseFunctor: Functor[Base]
+trait Recursive[T] extends Base {
 
   def project(t: T): Base[T]
 
