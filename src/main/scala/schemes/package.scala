@@ -7,6 +7,8 @@ package object schemes {
 
   type Coalgebra[F[_], A] = A => F[A]
 
+  type RAlgebra[F[_], T, A] = F[(T, A)] => A
+
   def hylo[F[_]: Functor, A, B](alg: Algebra[F, B], coalg: Coalgebra[F, A])(a: A): B =
     alg(coalg(a).map(hylo(alg, coalg)(_)))
 
@@ -38,6 +40,9 @@ package object schemes {
 
     def cata[A](alg: Algebra[F, A]): A =
       ev.cata[A](target)(alg)
+
+    def para[A](rAlg: RAlgebra[F, T, A]): A =
+      ev.para(target)(rAlg)
   }
 
   implicit class AlgebraOps[F[_]: Functor, A](algA: Algebra[F, A]) {

@@ -1,6 +1,7 @@
 package schemes
 
 import cats.Functor
+import cats.syntax.functor._
 
 trait Recursive[T] extends Base {
 
@@ -8,6 +9,9 @@ trait Recursive[T] extends Base {
 
   def cata[A](t: T)(alg: Algebra[Base, A]): A =
     hylo(alg, project)(t)
+
+  def para[A](t: T)(rAlg: RAlgebra[Base, T, A]): A =
+    rAlg(project(t).map(t => (t, para(t)(rAlg))))
 }
 
 object Recursive {

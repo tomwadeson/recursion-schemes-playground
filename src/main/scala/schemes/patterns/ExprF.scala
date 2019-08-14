@@ -2,7 +2,8 @@ package schemes
 
 package patterns
 
-import cats.Functor
+import cats.{Functor, PartialOrder}
+import cats.syntax.partialOrder._
 
 sealed trait ExprF[+A] extends Product with Serializable
 
@@ -23,6 +24,15 @@ object ExprF {
       case Div(x, y)  => Div(f(x), f(y))
     }
   }
+
+  implicit def partialOrder[A]: PartialOrder[ExprF[A]] =
+    PartialOrder.from[ExprF[A]] {
+      case (Add(_, _), Mult(_, _)) => -1.0
+      case (Add(_, _), Div(_, _))  => -1.0
+      case (Sub(_, _), Mult(_, _)) => -1.0
+      case (Sub(_, _), Div(_, _))  => -1.0
+      case _                       => Double.NaN
+    }
 
   type Expr = Fix[ExprF]
 
@@ -47,6 +57,25 @@ object ExprF {
     case Mult(x, y) => s"($x * $y)"
     case Div(x, y)  => s"($x / $y)"
   }
+
+  val showRpn: Algebra[ExprF, String] = {
+    case Lit(x)     => x.toString
+    case Add(x, y)  => s"$x $y +"
+    case Sub(x, y)  => s"$x $y -"
+    case Mult(x, y) => s"$x $y *"
+    case Div(x, y)  => s"$x $y /"
+  }
+
+  def withParens[A](parent: ExprF[A], childExpr: ExprF[A], childStr: String) =
+    if (childExpr < parent) s"($childStr)" else childStr
+
+  val minimalParens: RAlgebra[ExprF, Expr, String] = {
+    case Lit(x)                             => x.toString
+    case Add((_, x), (_, y))                => s"$x + $y"
+    case Sub((_, x), (_, y))                => s"$x - $y"
+    case e @ Mult((Fix(l), x), (Fix(r), y)) => s"${withParens(e, l, x)} * ${withParens(e, r, y)}"
+    case e @ Div((Fix(l), x), (Fix(r), y))  => s"${withParens(e, l, x)} / ${withParens(e, r, y)}"
+  }
 }
 
 object ExprExample extends App {
@@ -67,4 +96,14 @@ object ExprExample extends App {
 
   // Output:
   // ((1 + 1) * ((2 * 5) + (10 - 50))) = -60
+
+  println(expr.cata(showRpn))
+
+  // Output:
+  // 1 1 + 2 5 * 10 50 - + *
+
+  println(expr.para(minimalParens))
+
+  // Output:
+  // (1 + 1) * (2 * 5 + 10 - 50)
 }
