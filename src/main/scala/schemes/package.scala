@@ -3,7 +3,7 @@ import cats.syntax.functor._
 
 package object schemes {
 
-  type Algebra[F[_], A] = F[A] => A
+  type Algebra[-F[_], A] = F[A] => A
 
   type Coalgebra[F[_], A] = A => F[A]
 
@@ -38,5 +38,15 @@ package object schemes {
 
     def cata[A](alg: Algebra[F, A]): A =
       ev.cata[A](target)(alg)
+  }
+
+  implicit class AlgebraOps[F[_]: Functor, A](algA: Algebra[F, A]) {
+
+    def zip[B](algB: Algebra[F, B]): Algebra[F, (A, B)] =
+      fab => {
+        val a = algA(fab.map(_._1))
+        val b = algB(fab.map(_._2))
+        (a, b)
+      }
   }
 }

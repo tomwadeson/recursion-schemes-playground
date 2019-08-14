@@ -62,7 +62,9 @@ object ExprExample extends App {
       )
     )
 
-  println(expr.cata(eval))
-  println(expr.cata(show))
+  val (exprString, result) = expr.cata(show zip eval)
+  println(s"$exprString = $result")
 
+  // Output:
+  // ((1 + 1) * ((2 * 5) + (10 - 50))) = -60
 }
