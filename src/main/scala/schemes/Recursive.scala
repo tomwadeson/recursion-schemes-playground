@@ -12,7 +12,7 @@ trait Recursive[T] extends Base {
 
   def para[A](t: T)(rAlg: RAlgebra[Base, T, A]): A =
     // rAlg(project(t).map(t => (t, para(t)(rAlg))))
-    hylo[Lambda[X => Base[(T, X)]], T, A](rAlg, t => project(t).tupleLeft(t))(t)(baseFunctor.compose[(T, ?)])
+    hylo[Lambda[X => Base[(T, X)]], T, A](rAlg, t => project(t).tupleLeft(t))(t)(BF.compose[(T, ?)])
 }
 
 object Recursive {
@@ -22,7 +22,7 @@ object Recursive {
   def instance[T, F[_]](proj: T => F[T])(implicit F: Functor[F]): Recursive.Aux[T, F] =
     new Recursive[T] {
       type Base[A] = F[A]
-      implicit val baseFunctor: Functor[F] = F
+      implicit val BF: Functor[F] = F
       def project(t: T): F[T] = proj(t)
     }
 }

@@ -17,7 +17,7 @@ object Corecursive {
   def instance[T, F[_]](em: F[T] => T)(implicit F: Functor[F]): Corecursive.Aux[T, F] =
     new Corecursive[T] {
       type Base[A] = F[A]
-      implicit val baseFunctor: Functor[F] = F
+      implicit val BF: Functor[F] = F
       override def embed(bt: F[T]): T = em(bt)
     }
 }

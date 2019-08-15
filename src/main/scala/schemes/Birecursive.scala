@@ -12,7 +12,7 @@ object Birecursive {
   def instance[T, F[_]](proj: T => F[T], em: F[T] => T)(implicit F: Functor[F]): Birecursive.Aux[T, F] =
     new Birecursive[T] {
       type Base[A] = F[A]
-      implicit val baseFunctor: Functor[F] = F
+      implicit val BF: Functor[F] = F
 
       override def project(t: T): F[T] = proj(t)
 
