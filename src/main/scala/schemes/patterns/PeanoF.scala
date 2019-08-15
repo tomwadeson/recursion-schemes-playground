@@ -3,6 +3,7 @@ package schemes
 package patterns
 
 import cats.Functor
+import cats.derived
 
 sealed trait PeanoF[+A]
 
@@ -14,13 +15,7 @@ object PeanoF {
   final case object Zero extends PeanoF[Nothing]
 
   implicit val functor: Functor[PeanoF] =
-    new Functor[PeanoF] {
-      override def map[A, B](fa: PeanoF[A])(f: A => B): PeanoF[B] =
-        fa match {
-          case Succ(n) => Succ(f(n))
-          case Zero    => Zero
-        }
-    }
+    derived.semi.functor
 
   val toInt: Algebra[PeanoF, Int] = {
     case Succ(n) => n + 1

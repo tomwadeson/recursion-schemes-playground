@@ -9,6 +9,7 @@ lazy val root = (project in file("."))
     name := "recursion-schemes",
     libraryDependencies ++= Seq(
       catsCore,
+      kittens,
       scalaTest % Test
     )
   )

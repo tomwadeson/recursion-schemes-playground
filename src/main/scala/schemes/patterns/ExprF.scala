@@ -4,6 +4,7 @@ package patterns
 
 import cats.{Functor, PartialOrder}
 import cats.syntax.partialOrder._
+import cats.derived
 
 sealed trait ExprF[+A] extends Product with Serializable
 
@@ -15,15 +16,8 @@ object ExprF {
   final case class Mult[A](x: A, y: A) extends ExprF[A]
   final case class Div[A](x: A, y: A) extends ExprF[A]
 
-  implicit val functor: Functor[ExprF] = new Functor[ExprF] {
-    override def map[A, B](fa: ExprF[A])(f: A => B): ExprF[B] = fa match {
-      case Lit(x)     => Lit(x)
-      case Add(x, y)  => Add(f(x), f(y))
-      case Sub(x, y)  => Sub(f(x), f(y))
-      case Mult(x, y) => Mult(f(x), f(y))
-      case Div(x, y)  => Div(f(x), f(y))
-    }
-  }
+  implicit val functor: Functor[ExprF] =
+    derived.semi.functor
 
   implicit def partialOrder[A]: PartialOrder[ExprF[A]] =
     PartialOrder.from[ExprF[A]] {

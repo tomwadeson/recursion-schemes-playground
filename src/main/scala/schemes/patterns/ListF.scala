@@ -5,6 +5,7 @@ package patterns
 import cats.Functor
 import cats.data.Nested
 import cats.implicits._
+import cats.derived
 
 sealed trait ListF[+A, +B] extends Product with Serializable
 
@@ -22,13 +23,8 @@ object ListF {
   def nil[A]: MyList[A] =
     Fix[ListF[A, ?]](ListF.Nil)
 
-  implicit def functorB[X]: Functor[ListF[X, ?]] = new Functor[ListF[X, ?]] {
-    override def map[A, B](fa: ListF[X, A])(f: A => B): ListF[X, B] =
-      fa match {
-        case Cons(head, tail) => Cons(head, f(tail))
-        case Nil              => Nil
-      }
-  }
+  implicit def functor[A]: Functor[ListF[A, ?]] =
+    derived.semi.functor
 
   object algebras {
 
