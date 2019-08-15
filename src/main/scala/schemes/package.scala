@@ -45,13 +45,16 @@ package object schemes {
       ev.para(target)(rAlg)
   }
 
-  implicit class AlgebraOps[F[_]: Functor, A](algA: Algebra[F, A]) {
+  implicit class AlgebraOps[F[_]: Functor, A](alg: Algebra[F, A]) {
 
     def zip[B](algB: Algebra[F, B]): Algebra[F, (A, B)] =
       fab => {
-        val a = algA(fab.map(_._1))
+        val a = alg(fab.map(_._1))
         val b = algB(fab.map(_._2))
         (a, b)
       }
+
+    def toRAlgebra[T]: RAlgebra[F, T, A] =
+      alg compose (_.map(_._2))
   }
 }

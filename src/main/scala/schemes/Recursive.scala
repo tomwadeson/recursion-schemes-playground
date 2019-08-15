@@ -8,7 +8,8 @@ trait Recursive[T] extends Base {
   def project(t: T): Base[T]
 
   def cata[A](t: T)(alg: Algebra[Base, A]): A =
-    hylo(alg, project)(t)
+    // hylo(alg, project)(t)
+    para(t)(alg.toRAlgebra[T])
 
   def para[A](t: T)(rAlg: RAlgebra[Base, T, A]): A =
     // rAlg(project(t).map(t => (t, para(t)(rAlg))))
