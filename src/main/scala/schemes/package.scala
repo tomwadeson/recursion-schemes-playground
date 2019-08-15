@@ -22,6 +22,9 @@ package object schemes {
 
   implicit class IdOps[A](target: A) {
 
+    def hylo[F[_]: Functor, B](alg: Algebra[F, B], coalg: Coalgebra[F, A]): B =
+      schemes.hylo(alg, coalg)(target)
+
     object ana {
       def apply[T] = new PartiallyApplied[T]
 

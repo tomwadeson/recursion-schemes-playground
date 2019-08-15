@@ -13,7 +13,7 @@ trait Recursive[T] extends Base {
 
   def para[A](t: T)(rAlg: RAlgebra[Base, T, A]): A =
     // rAlg(project(t).map(t => (t, para(t)(rAlg))))
-    hylo[Lambda[X => Base[(T, X)]], T, A](rAlg, t => project(t).tupleLeft(t))(t)(BF.compose[(T, ?)])
+    t.hylo[λ[X => Base[(T, X)]], A](rAlg, t => project(t).tupleLeft(t))(BF.compose[(T, ?)])
 }
 
 object Recursive {
