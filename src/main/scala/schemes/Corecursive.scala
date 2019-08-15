@@ -7,7 +7,7 @@ trait Corecursive[T] extends Base {
   def embed(bt: Base[T]): T
 
   def ana[A](a: A)(coalg: Coalgebra[Base, A]): T =
-    hylo(embed, coalg)(a)
+    a.hylo(embed, coalg)
 }
 
 object Corecursive {
